@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block cat-nav %}
+{% if sub_category_products %}
+<nav class="cat-nav">
+    <ul>
+        {% for sub in sub_category_products %}
+        <li><a href="{% url 'subcategory' sub.name %}"> {{ sub.name }} </a></li>
+        {% endfor %}
+    </ul>
+</nav>  
+{% endif %}
+{% endblock cat-nav %}
+
+{% block content %}
+{% load static %}
+
+<link href="{% static 'css/category.css' %}" rel="stylesheet" />
+
+<style>
+    .Cat-title {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .cat-nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        padding: 10px 0;
+        background-color: #f8f9fa;
+        margin: 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .cat-nav ul li {
+        margin: 0 10px;
+    }
+
+    .cat-nav ul li a {
+        text-decoration: none;
+        color: #007bff;
+        font-size: 1rem;
+    }
+
+    .cat-nav ul li a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+</style>
+
+<br><br><br>
+
+<h2 class="Cat-title">
+    {% if sub_category_products %}
+        {{ category_products.0.category }}
+    {% else %}
+        {{ category_products.0.sub_category }}
+    {% endif %}
+</h2>
+
+<div class="container px-4 px-lg-5 mt-5">
+    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+        {% for product in category_products %}
+        <div class="col mb-5">
+            <div class="card h-100">
+                <!-- Product image -->
+                <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" />
+                <!-- Product details -->
+                <div class="card-body p-4">
+                    <div class="text-center">
+                        <!-- Product name -->
+                        <h5 class="fw-bolder">{{ product.name }}</h5>
+                        <!-- Product price -->
+                        ₹{{ product.price }}
+                    </div>
+                </div>
+                <!-- Product actions -->
+                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    <div class="text-center">
+                        <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.pk %}">View options</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/product.css' %}">
+
+<div class="container px-4 px-lg-5 mt-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+        <!-- Product Details -->
+        <div class="product">
+            <div class="image text-center">
+                <img src="{{ products.image.url }}" alt="{{ products.name }}" class="img-fluid" />
+            </div>
+            <div class="content mt-4">
+                <h2 class="productName text-center"> {{ products.name }} </h2>
+                <p class="description mt-3 text-muted text-center"> {{ products.description }} </p>
+                <h3 class="price text-center">₹{{ products.price }}</h3>
+                <div class="button text-center mt-4">
+                    <button class="btn btn-primary buyBtn">Buy Product</button>
+                    <button class="btn btn-outline-secondary addBtn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .product {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .product .image img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .product .content {
+        text-align: center;
+    }
+
+    .productName {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .description {
+        font-size: 1rem;
+        color: #666;
+    }
+
+    .price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #e74c3c;
+    }
+
+    .button button {
+        margin: 10px 5px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .button .buyBtn {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .button .buyBtn:hover {
+        background-color: #0056b3;
+    }
+
+    .button .addBtn {
+        background-color: white;
+        color: #007bff;
+        border: 1px solid #007bff;
+    }
+
+    .button .addBtn:hover {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+
+{% endblock content %}

@@ -1,1 +1,63 @@
-<h1>hi all</h1>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container px-4 px-lg-5 mt-5">
+    <!-- Check if there are products -->
+    {% if prodects %}
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            {% for product in prodects %}
+                <div class="col mb-5">
+                    <div class="card h-100">
+                        <!-- Product image with fallback -->
+                        <img class="card-img-top" 
+                             src="{{ product.image.url|default:'path/to/default/image.jpg' }}" 
+                             alt="{{ product.name }}" />
+
+                        <!-- Product details -->
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <!-- Product name -->
+                                <h5 class="fw-bolder">{{ product.name }}</h5>
+                                <!-- Product price -->
+                                ₹{{ product.price|floatformat:2 }}
+                            </div>
+                        </div>
+
+                        <!-- Product actions -->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center">
+                                <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">
+                                    View Product
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                <li class="page-item">
+                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <!-- Message for no products -->
+        <p class="text-center mt-5">No products available at the moment.</p>
+    {% endif %}
+</div>
+{% endblock content %}
