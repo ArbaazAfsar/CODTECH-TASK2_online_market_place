@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+
+<section class="registerpage">
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <div class="signin">
+            <div class="content">
+                <h2>Register</h2>
+                <div class="form">
+                    <div class="inputBox">
+                        <input type="text" required name="username">
+                        <i>Username</i>
+                    </div>
+                    <div class="inputBox">
+                        <input type="email" required name="email">
+                        <i>Email</i>
+                    </div>
+                    <div class="inputBox">
+                        <input type="number" required name="phone">
+                        <i>Mobile Number</i>
+                    </div>
+                    <div class="inputBox">
+                        <input type="password" required name="password" id="password">
+                        <i>Password</i>
+                    </div>
+                    <div class="inputBox">
+                        <input type="password" required name="confirm_password" id="confirm_password">
+                        <i>Confirm Password</i>
+                    </div>
+                    <div class="links">
+                        <a href="#">Forgot Password</a>
+                        <a href="{% url 'login' %}">Login</a>
+                    </div>
+                    <div class="inputBox">
+                        <input type="submit" value="Register">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <br><br><br><br>
+</section>
+
+<script>
+    // Password Matching Validation
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function (event) {
+        if (password.value !== confirmPassword.value) {
+            event.preventDefault(); // Prevent form submission
+            alert('Passwords do not match. Please try again.');
+        }
+    });
+</script>
+{% endblock content %}

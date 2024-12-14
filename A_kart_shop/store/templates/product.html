@@ -1,94 +1,109 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
+{% load custom_filters %}
+
+{% block cat-nav %}
+{% endblock cat-nav %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/product.css' %}">
 
-<div class="container px-4 px-lg-5 mt-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
+<div class="container py-5">
+    <div class="row justify-content-center">
         <!-- Product Details -->
-        <div class="product">
-            <div class="image text-center">
-                <img src="{{ products.image.url }}" alt="{{ products.name }}" class="img-fluid" />
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Product Image -->
+                    <div class="text-center mb-4">
+                        <img src="{{ product.image.url|default:'path/to/default-image.jpg' }}" 
+                             alt="{{ product.name }}" 
+                             class="img-fluid rounded" 
+                             style="max-height: 400px;">
+                    </div>
+                    <!-- Product Content -->
+                    <h2 class="text-center text-primary fw-bold">{{ product.name }}</h2>
+                    <div class="mt-3">
+                        <h5 class="text-secondary text-uppercase">Description:</h5>
+                        <ul class="list-group list-group-flush">
+                            {% for des in product.description.splitlines %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <i class="bi bi-arrow-right-circle-fill text-primary me-3"></i>
+                                <span>{{ des }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="text-center my-4">
+                        <h3 class="text-danger fw-bold">₹{{ product.price }}</h3>
+                    </div>
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-success btn-lg px-4" onclick="buyNow({{ product.id }})">
+                            <i class="bi bi-bag-fill me-2"></i>Buy Now
+                        </button>
+                        <button class="btn btn-outline-dark btn-lg px-4" onclick="addToCart({{ product.id }})">
+                            <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="content mt-4">
-                <h2 class="productName text-center"> {{ products.name }} </h2>
-                <p class="description mt-3 text-muted text-center"> {{ products.description }} </p>
-                <h3 class="price text-center">₹{{ products.price }}</h3>
-                <div class="button text-center mt-4">
-                    <button class="btn btn-primary buyBtn">Buy Product</button>
-                    <button class="btn btn-outline-secondary addBtn">Add to Cart</button>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="col-lg-8 col-md-10 mt-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="text-center text-primary">Reviews</h3>
+                    
+                    {% if reviews %}
+                        <ul class="list-group list-group-flush">
+                            {% for review in reviews %}
+                            <li class="list-group-item">
+                                <strong>{{ review.user.username }} - </strong>
+                                <!-- Star Rating -->
+                                <span>
+                                    {% for i in 5|range_filter %}
+                                        {% if i < review.rating %}
+                                            <i class="bi bi-star-fill text-warning"></i> <!-- Filled Star -->
+                                        {% else %}
+                                            <i class="bi bi-star text-muted"></i> <!-- Empty Star -->
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <p>{{ review.review_text }}</p>
+                                <small>Reviewed on {{ review.created_at }}</small>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-center">No reviews yet. Be the first to review this product!</p>
+                    {% endif %}
+
+                    <!-- Review Form -->
+                    <div class="text-center mt-4">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'add_review' product.id %}" class="btn btn-warning btn-lg">
+                                <i class="bi bi-pencil-square me-2"></i>Add Review
+                            </a>
+                        {% else %}
+                            <p class="text-center text-muted">Please <a href="{% url 'login' %}">login</a> to add a review.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .product {
-        max-width: 600px;
-        margin: 0 auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+<script>
+    function buyNow(productId) {
+        alert('Buy Now feature coming soon for product ID: ' + productId);
     }
 
-    .product .image img {
-        width: 100%;
-        height: auto;
-        border-radius: 10px;
+    function addToCart(productId) {
+        alert('Product ID ' + productId + ' added to cart!');
     }
-
-    .product .content {
-        text-align: center;
-    }
-
-    .productName {
-        font-size: 1.8rem;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .description {
-        font-size: 1rem;
-        color: #666;
-    }
-
-    .price {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #e74c3c;
-    }
-
-    .button button {
-        margin: 10px 5px;
-        padding: 10px 20px;
-        font-size: 1rem;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .button .buyBtn {
-        background-color: #007bff;
-        color: white;
-    }
-
-    .button .buyBtn:hover {
-        background-color: #0056b3;
-    }
-
-    .button .addBtn {
-        background-color: white;
-        color: #007bff;
-        border: 1px solid #007bff;
-    }
-
-    .button .addBtn:hover {
-        background-color: #007bff;
-        color: white;
-    }
-</style>
-
+</script>
 {% endblock content %}

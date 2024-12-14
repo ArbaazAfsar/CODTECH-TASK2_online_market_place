@@ -1,0 +1,49 @@
+.Cat-title{
+    text-align: center;
+    position: relative;
+    line-height: 60px;
+    color: #555;
+  
+  }
+  .Cat-title::after{
+    content: '';
+    background: #ff523b;
+    width: 80px;
+    height: 5px;
+    border-radius: 5px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);}
+
+.cat-nav{
+    width: 100%;
+    height: 40px;
+    background-color: #c9c5c5;
+    border: 1px solid gray;
+}
+
+.cat-nav ul{
+    display: flex;
+    justify-content: space-around;
+    list-style-type: none;
+    
+}
+
+.cat-nav ul li{
+    margin-top: 8px;
+
+}
+
+.cat-nav ul li a{
+    text-decoration: none;
+    color: rgb(59, 57, 57);
+    font-family: sans-serif;
+
+    font-size: 19px;
+    font-weight: 400;
+}
+
+.cat-nav ul li a:hover{
+    color: rgb(0, 0, 0);
+}

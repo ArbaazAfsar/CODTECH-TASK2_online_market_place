@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4 text-black-50">Search Results for: "{{ search_query }}"</h2>
+
+    <!-- Display Products -->
+    <h3 class="mb-4 text-black-50">Products:</h3>
+    <div class="row">
+        {% for product in products %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-lg border-0" style="background-color: #ffffff;">
+                    <img src="{{ product.image.url|default:'path/to/default-image.jpg' }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover; border-radius: 10px;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold text-dark">{{ product.name }}</h5>
+                        <p class="card-text text-muted">Category: {{ product.category.name }}</p>
+                        <p class="card-text text-muted">Subcategory: {{ product.sub_category.name }}</p>
+                        <h6 class="text-success fw-bold">₹{{ product.price }}</h6>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-center">
+                        <a href="{% url 'product' product.id %}" class="btn btn-dark w-100 fw-bold">View Product</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center text-black-50">No products found.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Display Categories -->
+    <h3 class="mb-4 text-black-50">Categories:</h3>
+    <div class="row">
+        {% for category in Categorys %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-lg border-0" style="background-color: #ffffff;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-dark">{{ category.name }}</h5>
+                        <a href="{% url 'category' category.id %}" class="btn btn-dark w-100 fw-bold">View Category</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center text-black-50">No matching categories.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Display Subcategories -->
+    <h3 class="mb-4 text-black-50">Subcategories:</h3>
+    <div class="row">
+        {% for subcategory in Subcategorys %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-lg border-0" style="background-color: #ffffff;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-dark">{{ subcategory.name }}</h5>
+                        <a href="{% url 'subcategory' subcategory.id %}" class="btn btn-dark w-100 fw-bold">View Subcategory</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center text-black-50">No matching subcategories.</p>
+        {% endfor %}
+    </div>
+
+    {% if not products and not Categorys and not Subcategorys %}
+        <p class="text-center text-muted">No results found matching your search.</p>
+    {% endif %}
+</div>
+{% endblock %}

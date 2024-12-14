@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block cat-nav %}
+<!-- Add navigation or breadcrumb here if required -->
+{% endblock cat-nav %}
+
+{% block content %}
+<link href="{% static 'css/category.css' %}" rel="stylesheet" />
+
+<!-- Page Title -->
+<div class="container text-center my-5">
+    <h2 class="Cat-title text-primary fw-bold">{{ category_products.0.sub_category }}</h2>
+</div>
+
+<div class="container">
+    {% if category_products %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for product in category_products %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <!-- Product Image -->
+                        <img class="card-img-top img-fluid" 
+                             src="{{ product.image.url }}" 
+                             alt="{{ product.name }}" 
+                             style="height: 200px; object-fit: fill;" />
+
+                        <!-- Product Details -->
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate" title="{{ product.name }}">{{ product.name }}</h5>
+                            <p class="card-text text-muted">₹{{ product.price|floatformat:2 }}</p>
+                        </div>
+
+                        <!-- Product Actions -->
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="{% url 'product' product.pk %}" class="btn btn-outline-primary w-100">
+                                View Options
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center my-5">
+            <p class="text-muted">No products found in this subcategory.</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .Cat-title {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        border: none;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-img-top {
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+    }
+
+    .text-truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+{% endblock content %}
+
