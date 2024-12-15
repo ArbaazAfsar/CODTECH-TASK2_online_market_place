@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import Category, Product, SubCategory
+from orders.models import Order
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -14,8 +16,11 @@ class SubCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'category', 'sub_category')  # Fields to display
+    list_display = ('name', 'price', 'category', 'sub_category','is_on_sale', 'sale_price')  # Fields to display
     list_filter = ('category', 'sub_category')  # Filters for categories
     search_fields = ('name', 'description')  # Search by name and description
     ordering = ('-price',)  # Orders products by price in descending order
+    list_editable = ('is_on_sale', 'sale_price')
 
+
+admin.site.register(Order)

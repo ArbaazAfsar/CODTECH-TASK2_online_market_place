@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3>Confirm Your Purchase</h3>
+    <p>Product: {{ product.name }}</p>
+    <p>Price: ₹{{ product.get_final_price|floatformat:2 }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Confirm Purchase</button>
+    </form>
+</div>
+{% endblock %}

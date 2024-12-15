@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <!-- Product Image -->
                     <div class="text-center mb-4">
-                        <img src="{{ product.image.url|default:'path/to/default-image.jpg' }}" 
+                        <img src="{{ product.image.url }}" 
                              alt="{{ product.name }}" 
                              class="img-fluid rounded" 
                              style="max-height: 400px;">
@@ -36,14 +36,14 @@
                         </ul>
                     </div>
                     <div class="text-center my-4">
-                        <h3 class="text-danger fw-bold">₹{{ product.price }}</h3>
+                        <p class="text-muted">Price: ₹{{ product.get_final_price|floatformat:2 }}</p>
                     </div>
                     <!-- Buttons -->
                     <div class="d-flex justify-content-center gap-3">
-                        <button class="btn btn-success btn-lg px-4" onclick="buyNow({{ product.id }})">
-                            <i class="bi bi-bag-fill me-2"></i>Buy Now
+                        <button class="btn btn-success btn-lg px-4" onclick="window.location.href='{% url 'buy_product' product.id %}'" aria-label="Buy Now">
+                            <i class="bi bi-bag-fill me-2"></i> Buy Now
                         </button>
-                        <button class="btn btn-outline-dark btn-lg px-4" onclick="addToCart({{ product.id }})">
+                        <button class="btn btn-outline-dark btn-lg px-4" onclick="window.location.href='{% url 'add_to_cart' product.id %}'" aria-label="Add to Cart">
                             <i class="bi bi-cart-plus me-2"></i>Add to Cart
                         </button>
                     </div>
@@ -78,7 +78,7 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-center">No reviews yet. Be the first to review this product!</p>
+                        <p class="text-center">No reviews yet. <a href="{% url 'add_review' product.id %}">Be the first to review this product!</a></p>
                     {% endif %}
 
                     <!-- Review Form -->

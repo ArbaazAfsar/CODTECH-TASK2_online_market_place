@@ -4,11 +4,15 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from .forms import ReviewForm
+from orders.forms import ProductForm
+
+from django.db.models import Q
 
 def home(request):
     # Order products by 'id' or another appropriate field to ensure consistent pagination
-    prodects = Product.objects.all().order_by('id')  # Replace 'id' with the desired field for ordering
-    paginator = Paginator(prodects, 12)  # 12 products per page
+    products = Product.objects.all().order_by('id')
+  # Replace 'id' with the desired field for ordering
+    paginator = Paginator(products, 8)  # 8 products per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
@@ -16,7 +20,7 @@ def home(request):
     sub_category_products = SubCategory.objects.all()
     
     return render(request, 'home.html', {
-        'prodects': page_obj,
+        'products': page_obj,
         'page_obj': page_obj,
         'Categories': Categories,
         'sub_category_products': sub_category_products
@@ -72,9 +76,14 @@ def products(request, pk):
     
     
 @login_required(login_url='login')
-@login_required
 def add_review(request, product_id):
-    product = Product.objects.get(id=product_id)  # Fetch product based on the ID
+    product = get_object_or_404(Product, id=product_id)
+    existing_review = Review.objects.filter(user=request.user, product=product).first()
+    
+    if existing_review:
+        messages.info(request, 'You have already reviewed this product.')
+        return redirect('product', pk=product.id)
+
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
@@ -82,19 +91,14 @@ def add_review(request, product_id):
             review.user = request.user
             review.product = product
             review.save()
-            return redirect('product', pk=product.id)  # Redirect to product detail page with pk
+            messages.success(request, 'Your review has been submitted!')
+            return redirect('product', pk=product.id)
     else:
         form = ReviewForm()
 
     return render(request, 'add_review.html', {'form': form, 'product': product})
 
-from fuzzywuzzy import fuzz
 
-from django.db.models import Q
-
-from django.db.models import Q
-
-from django.db.models import Q
 
 def search_results(request):
     search_query = request.GET.get('search', '')
@@ -130,3 +134,5 @@ def search_results(request):
 def advanced_search(request):
     categories = Category.objects.all()
     return render(request, 'advanced_search.html', {'categories': categories})
+
+
