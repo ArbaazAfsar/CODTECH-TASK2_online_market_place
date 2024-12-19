@@ -4,7 +4,8 @@ from .forms import ProductForm
 from .models import  Order, Cart, OrderItem
 from store.models import Product
 from django.db.models import Sum, F
-from django.db import transaction  # Ensure atomicity
+from django.db import transaction  
+from decimal import Decimal
 
 
 @login_required
@@ -34,12 +35,25 @@ def buy_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if request.method == 'POST':
+        # Create the Order instance first
         order = Order.objects.create(
             user=request.user,
+            total_price=product.get_final_price(),  # Initial price, will be updated later
+        )
+
+        # Create the OrderItem instance related to the created Order
+        order_item = OrderItem.objects.create(
+            order=order,
             product=product,
-            quantity=1,  # Adjust as needed, e.g., getting quantity from the form
+            quantity=1,  # You can change this if you collect quantity from the form
             total_price=product.get_final_price()
         )
+
+        # Update the total_price of the order after creating the OrderItem
+        order.total_price = order_item.total_price  # Add logic if multiple items
+        order.save()
+
+        # Redirect to the success page with the order ID
         return redirect('order_success', order_id=order.id)
 
     return render(request, 'buy_product.html', {'product': product})
@@ -63,8 +77,21 @@ def add_to_cart(request, product_id):
 @login_required
 def view_cart(request):
     cart_items = Cart.objects.filter(user=request.user)
-    total_amount = sum(item.total_price for item in cart_items)
-    return render(request, 'view_cart.html', {'cart_items': cart_items, 'total_amount': total_amount})
+    subtotal = sum(item.product.price * item.quantity for item in cart_items)
+
+    # Define tax rate (e.g., 18%) as a Decimal
+    tax_rate = Decimal('0.18')
+    tax_amount = subtotal * tax_rate
+    total_amount = subtotal + tax_amount
+
+    context = {
+        'cart_items': cart_items,
+        'subtotal': subtotal,
+        'tax_rate': tax_rate * 100,  # Display as a percentage
+        'tax_amount': tax_amount,
+        'total_amount': total_amount,
+    }
+    return render(request, 'view_cart.html', context)
 
 
 @login_required

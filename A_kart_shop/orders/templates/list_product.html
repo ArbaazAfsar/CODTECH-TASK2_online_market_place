@@ -1,12 +1,74 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2>List Your Product</h2>
-    <form method="post" enctype="multipart/form-data">
+    <h2 class="text-center mb-4">List Your Product</h2>
+    <form method="post" enctype="multipart/form-data" class="shadow-lg p-4 rounded">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">List Product</button>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="id_name" class="form-label">Product Name</label>
+                    {{ form.name|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="id_image" class="form-label">Product Image</label>
+                    {{ form.image|add_class:"form-control-file" }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="id_price" class="form-label">Price</label>
+                    {{ form.price|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="id_sale_price" class="form-label">Sale Price</label>
+                    {{ form.sale_price|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="id_description" class="form-label">Description</label>
+            {{ form.description|add_class:"form-control" }}
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="id_category" class="form-label">Category</label>
+                    {{ form.category|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="id_sub_category" class="form-label">Sub-category</label>
+                    {{ form.sub_category|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group form-check mb-3">
+            <div class="form-check">
+                {{ form.is_on_sale }}
+                <label class="form-check-label" for="id_is_on_sale">
+                    Is on Sale?
+                </label>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success btn-lg">List Product</button>
+        </div>
     </form>
 </div>
 {% endblock %}

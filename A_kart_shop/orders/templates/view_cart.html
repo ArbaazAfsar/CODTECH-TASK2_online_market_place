@@ -1,47 +1,166 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
+
+<style>
+/* Custom styles for the cart page */
+.cart-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.cart-page table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.cart-page table th, .cart-page table td {
+    padding: 15px;
+    text-align: left;
+}
+
+.cart-page table th {
+    background-color: #444444;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.cart-page table td {
+    font-size: 1rem;
+    background-color: #f8f8f8;
+}
+
+.cart-info {
+    display: flex;
+    align-items: center;
+}
+
+.cart-info img {
+    width: 60px;
+    height: 60px;
+    margin-right: 15px;
+}
+
+.cart-info p {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.cart-info small {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.cart-info a {
+    color: #f44336;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.total-price {
+    margin-top: 20px;
+    border-top: 2px solid #ddd;
+    padding-top: 20px;
+}
+
+.total-price table {
+    width: 100%;
+}
+
+.total-price td {
+    padding: 10px;
+    font-size: 1.1rem;
+}
+
+.total-price td:first-child {
+    font-weight: bold;
+}
+
+.total-price td:last-child {
+    color: #444444;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    text-decoration: none;
+}
+
+.btn-danger, .btn-primary {
+    background-color:rgb(226, 94, 84);
+    border: none;
+    color: white;
+}
+
+.btn-sm {
+    font-size: 0.8rem;
+}
+</style>
+
+<div class="small-container cart-page mt-5">
     <h3>Your Cart</h3>
 
     {% if cart_items %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Product</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Total</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
-                    <tr>
-                        <td>{{ item.product.name }}</td>
-                        <td>₹{{ item.product.get_final_price|floatformat:2 }}</td>
-                        <td>
-                            <form action="{% url 'update_cart' item.id %}" method="post">
-                                {% csrf_token %}
-                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" style="width: 60px;">
-                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
-                            </form>
-                        </td>
-                        <td>₹{{ item.total_price|floatformat:2 }}</td>
-                        <td>
-                            <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm">Remove</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
+        <table>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+            {% for item in cart_items %}
+            <tr>
+                <td>
+                    <div class="cart-info">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                        <div>
+                            <p>{{ item.product.name }}</p>
+                            <small>Price: ₹{{ item.product.get_final_price|floatformat:2 }}</small>
+                            <br>
+                            <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm text-white">Remove</a>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <form action="{% url 'update_cart' item.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" style="width: 60px;">
+                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                    </form>
+                </td>
+                <td>₹{{ item.total_price|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
         </table>
 
-        <h4>Total Amount: ₹{{ total_amount|floatformat:2 }}</h4>
+        <div class="total-price">
+            <table>
+                <tr>
+                    <td>Subtotal</td>
+                    <td>₹{{ subtotal|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Tax (18%)</td>
+                    <td>₹{{ tax_amount|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td>₹{{ total_amount|floatformat:2 }}</td>
+                </tr>
+            </table>
+        </div>
 
         <a href="{% url 'checkout' %}" class="btn btn-success">Proceed to Checkout</a>
-
     {% else %}
         <p>Your cart is empty.</p>
     {% endif %}
 </div>
 {% endblock %}
+

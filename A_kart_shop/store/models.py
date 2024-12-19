@@ -22,15 +22,15 @@ class SubCategory(models.Model):
         return self.name
 
 class Product(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.CASCADE,null=True)  # Seller is a user
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=50)
     image = models.ImageField(upload_to='upload/product', null=False)
     price = models.DecimalField(default=0, decimal_places=2, max_digits=20)
-    sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=20, null=True, blank=True)  # Optional discount price
+    sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=20, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True, blank=True)
-    is_on_sale = models.BooleanField(default=False)  # Flag to indicate if product is on sale
+    is_on_sale = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -38,6 +38,16 @@ class Product(models.Model):
     def get_final_price(self):
         """Return sale price if on sale, else regular price."""
         return self.sale_price if self.is_on_sale else self.price
+
+    def get_average_rating(self):
+        """Calculate and return the average star rating, rounded."""
+        reviews = self.review_set.all()
+        if reviews.exists():
+            total_rating = sum(review.rating for review in reviews)
+            average_rating = total_rating / reviews.count()
+            return round(average_rating)  # Round the average rating to the nearest integer
+        return 0  # Return 0 if there are no reviews
+
     
     
     

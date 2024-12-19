@@ -1,11 +1,31 @@
 {% extends 'base.html' %}
 
-{% block title %}Order Success{% endblock %}
-
 {% block content %}
-<h1>Thank you for your order!</h1>
-<p>Your order ID is: {{ order.id }}</p>
-<p>Total Price: {{ order.total_price }}</p>
-<p>Order Date: {{ order.order_date }}</p>
-<a href="{% url 'home' %}">Go back to homepage</a>
+<div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg border-0" style="background: linear-gradient(45deg, #2f2f2f, #1a1a1a); border-radius: 15px; overflow: hidden; width: 100%; max-width: 600px;">
+        <div class="card-body text-white text-center">
+            <h3 class="mb-4" style="font-family: 'Orbitron', sans-serif; font-size: 2.5rem; letter-spacing: 1px; color: #ffffff;">Order Confirmation</h3>
+            
+            <div class="mb-3">
+                <p class="fw-bold" style="font-size: 1.2rem; color: #cccccc;">Thank you for your purchase!</p>
+                <p class="text-light" style="font-size: 1.5rem;">Your order ID: {{ order.id }}</p>
+            </div>
+
+            <div class="mb-3">
+                <p class="fw-bold" style="font-size: 1.2rem; color: #cccccc;">Product:</p>
+                <p class="text-light" style="font-size: 1.5rem;">{{ order.product.name }}</p>
+            </div>
+
+            <div class="mb-4">
+                <p class="fw-bold" style="font-size: 1.2rem; color: #cccccc;">Total Price:</p>
+                <p class="text-light" style="font-size: 1.5rem;">₹{{ order.total_price|floatformat:2 }}</p>
+            </div>
+
+            <div class="mt-4">
+                <a href="{% url 'home' %}" class="btn btn-light btn-lg" style="border-radius: 50px; background-color: #444444; color: white; border: none;">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+

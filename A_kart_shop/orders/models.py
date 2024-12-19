@@ -8,6 +8,7 @@ class Order(models.Model):
     products = models.ManyToManyField(Product, through='OrderItem')  # Through table for quantity and price
     total_price = models.DecimalField(default=0, decimal_places=2, max_digits=20)
     order_date = models.DateTimeField(auto_now_add=True)
+    quantity = models.PositiveIntegerField(default=1)
     status = models.CharField(
         max_length=20,
         choices=[('Pending', 'Pending'), ('Completed', 'Completed')],

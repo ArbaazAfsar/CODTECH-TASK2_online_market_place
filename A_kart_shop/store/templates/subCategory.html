@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
 {% block cat-nav %}
@@ -22,7 +21,7 @@
                     <div class="card h-100 shadow-sm">
                         <!-- Product Image -->
                         <img class="card-img-top img-fluid" 
-                             src="{{ product.image.url }}" 
+                             src="{{ product.image.url|default:'https://dummyimage.com/450x300/dee2e6/6c757d.jpg' }}" 
                              alt="{{ product.name }}" 
                              style="height: 200px; object-fit: fill;" />
 
@@ -30,6 +29,14 @@
                         <div class="card-body">
                             <h5 class="card-title text-truncate" title="{{ product.name }}">{{ product.name }}</h5>
                             <p class="card-text text-muted">₹{{ product.price|floatformat:2 }}</p>
+                            
+                            <!-- Product Reviews -->
+                            <div class="product" data-average-rating="{{ product.get_average_rating }}" data-review-count="{{ product.review_set.count }}" data-product-id="{{ product.id }}">
+                                <div class="d-flex justify-content-center small text-warning mb-2" id="stars-{{ product.id }}"></div>
+                                <p class="text-center">
+                                    <span id="average-rating-{{ product.id }}"></span> Stars ({{ product.review_set.count }} reviews)
+                                </p>
+                            </div>
                         </div>
 
                         <!-- Product Actions -->
@@ -48,6 +55,39 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+    // Function to display the stars based on the rating
+    function displayStars(starsElement, averageRating) {
+        starsElement.innerHTML = '';  // Clear previous stars
+    
+        // Loop to create filled stars
+        for (let i = 0; i < averageRating; i++) {
+            starsElement.innerHTML += '<i class="bi bi-star-fill text-warning"></i>';  // Filled star
+        }
+    
+        // Loop to create empty stars
+        for (let i = averageRating; i < 5; i++) {
+            starsElement.innerHTML += '<i class="bi bi-star text-warning"></i>';  // Empty star
+        }
+    }
+
+    // Get all product elements
+    const products = document.querySelectorAll('.product');
+    
+    products.forEach(product => {
+        // Get the average rating from the data attribute
+        const averageRating = parseFloat(product.getAttribute('data-average-rating'));
+        
+        // Display the average rating (rounded to 1 decimal place)
+        const averageRatingElement = product.querySelector('#average-rating-' + product.getAttribute('data-product-id'));
+        averageRatingElement.textContent = averageRating.toFixed(1);
+
+        // Get the stars element and display the stars
+        const starsElement = document.querySelector('#stars-' + product.getAttribute('data-product-id'));
+        displayStars(starsElement, Math.round(averageRating));  // Round to the nearest integer
+    });
+</script>
 
 <style>
     .Cat-title {
@@ -77,4 +117,3 @@
     }
 </style>
 {% endblock content %}
-
