@@ -54,9 +54,11 @@
                     <tr>
                         <th>Order ID</th>
                         <th>Customer</th>
+                        <th>Product Name</th>
                         <th>Date</th>
                         <th>Total Price</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,23 +66,45 @@
                         <tr>
                             <td>{{ order.id }}</td>
                             <td>{{ order.user.username }}</td>
+                            <td>
+                                <!-- Link to the product details page -->
+            
+                                {% for product in order.products.all %}
+                                <a href="{% url 'product' product.id %}">{{ product.name }}</a>
+                                {% endfor %}
+
+                            </td>
                             <td>{{ order.order_date|date:"Y-m-d" }}</td>
                             <td>₹{{ order.total_price }}</td>
                             <td>
                                 <span class="badge 
-                                    {% if order.status == 'Completed' %}
-                                        bg-success
-                                    {% else %}
-                                        bg-warning text-dark
-                                    {% endif %}
-                                ">
+                                    {% if order.status == 'Approved' %} bg-success 
+                                    {% elif order.status == 'Cancelled' %} bg-danger 
+                                    {% else %} bg-warning text-dark 
+                                    {% endif %}">
                                     {{ order.status }}
                                 </span>
+                            </td>
+                            <td>
+                                {% if order.seller_approval is None %}
+                                    <form method="post" action="{% url 'approve_order' order.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                    </form>
+                                    <form method="post" action="{% url 'cancel_order' order.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                    </form>
+                                {% elif order.seller_approval %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
                             </td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center">No orders found.</td>
+                            <td colspan="7" class="text-center">No orders found.</td>
                         </tr>
                     {% endfor %}
                 </tbody>

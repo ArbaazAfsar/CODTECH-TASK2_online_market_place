@@ -9,6 +9,8 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.views.generic import ListView
 from django.utils.timezone import now
+from django.http import JsonResponse
+from django.contrib import messages
 
 
 @login_required
@@ -159,34 +161,59 @@ def order_success(request, order_id):
     return render(request, 'order_success.html', {'order': order})
 
 
-class OrderListView(ListView):
+class SellerOrderListView(ListView):
     model = Order
-    template_name = 'order_list.html'  # Path to your template
+    template_name = 'order_list.html'
     context_object_name = 'orders'
-    paginate_by = 10  # Optional: Number of orders per page
 
     def get_queryset(self):
-        # Filter orders for products owned by the current user (seller)
         user = self.request.user
-        queryset = Order.objects.filter(items__product__seller=user).distinct()
-        year = self.request.GET.get('year')
-        if year:
-            queryset = queryset.filter(order_date__year=year)
-        return queryset
+        # Filter orders related to the seller's products
+        return Order.objects.filter(
+            items__product__seller=user  # Ensure 'items' refers to related OrderItems
+        ).distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Add summary statistics for products owned by the user
         user = self.request.user
-        context['total_orders'] = Order.objects.filter(items__product__seller=user).distinct().count()
+
+        # Summary statistics for the seller's orders
+        context['total_orders'] = self.get_queryset().count()
         context['orders_by_year'] = (
-            Order.objects.filter(items__product__seller=user)
-            .distinct()
+            self.get_queryset()
             .values('order_date__year')
             .annotate(total=Count('id'))
             .order_by('-order_date__year')
         )
-        context['total_revenue'] = OrderItem.objects.filter(product__seller=user).aggregate(
+        context['total_revenue'] = OrderItem.objects.filter(
+            product__seller=user
+        ).aggregate(
             total_revenue=Sum('total_price')
         )['total_revenue']
+
         return context
+    
+    
+@login_required
+def approve_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.user == order.items.first().product.seller:  # Check if the user is the seller
+        order.seller_approval = True
+        order.status = 'Approved'
+        order.save()
+        messages.success(request, 'Order approved successfully!')
+    else:
+        messages.error(request, 'Permission denied!')
+    return redirect('order_list')  # Redirect back to the seller orders list
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.user == order.items.first().product.seller:  # Check if the user is the seller
+        order.seller_approval = False
+        order.status = 'Cancelled'
+        order.save()
+        messages.success(request, 'Order cancelled successfully!')
+    else:
+        messages.error(request, 'Permission denied!')
+    return redirect('order_list')

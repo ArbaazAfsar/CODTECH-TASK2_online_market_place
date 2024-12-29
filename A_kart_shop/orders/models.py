@@ -11,12 +11,19 @@ class Order(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     status = models.CharField(
         max_length=20,
-        choices=[('Pending', 'Pending'), ('Completed', 'Completed')],
+        choices=[
+            ('Pending', 'Pending'),
+            ('Approved', 'Approved'),
+            ('Cancelled', 'Cancelled'),
+            ('Completed', 'Completed')
+        ],
         default='Pending'
     )
+    seller_approval = models.BooleanField(null=True, blank=True)  # None = Pending, True = Approved, False = Cancelled
 
     def __str__(self):
         return f"Order #{self.id} by {self.user.username}"
+
 
 
 class OrderItem(models.Model):
