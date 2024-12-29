@@ -3,9 +3,12 @@ from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
 from .models import  Order, Cart, OrderItem
 from store.models import Product
-from django.db.models import Sum, F
+from django.db.models import Sum, F,Count
 from django.db import transaction  
 from decimal import Decimal
+from django.contrib.auth.models import User
+from django.views.generic import ListView
+from django.utils.timezone import now
 
 
 @login_required
@@ -23,10 +26,14 @@ def list_product(request):
     return render(request, 'list_product.html', {'form': form})
 
 @login_required
-def seller_products(request):
-    # Filter products by the logged-in seller
-    products = Product.objects.filter(seller=request.user)
-    return render(request, 'seller_products.html', {'products': products})
+def seller_products(request, seller_id=None):
+    if seller_id:
+        seller = get_object_or_404(User, id=seller_id)
+    else:
+        seller = request.user
+
+    products = Product.objects.filter(seller=seller)
+    return render(request, 'seller_products.html', {'products': products, 'seller': seller})
 
 
 
@@ -59,16 +66,14 @@ def buy_product(request, product_id):
     return render(request, 'buy_product.html', {'product': product})
 
 
-@login_required
+@login_required(login_url='login')
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     # Check if the product is already in the user's cart
     cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
 
-    if not created:  # If product already exists in the cart, just increment the quantity
-        cart_item.quantity += 1
-        cart_item.save()
+
 
     return redirect('view_cart')  # Redirect to the cart page after adding the product
 
@@ -152,3 +157,36 @@ def checkout(request):
 def order_success(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'order_success.html', {'order': order})
+
+
+class OrderListView(ListView):
+    model = Order
+    template_name = 'order_list.html'  # Path to your template
+    context_object_name = 'orders'
+    paginate_by = 10  # Optional: Number of orders per page
+
+    def get_queryset(self):
+        # Filter orders for products owned by the current user (seller)
+        user = self.request.user
+        queryset = Order.objects.filter(items__product__seller=user).distinct()
+        year = self.request.GET.get('year')
+        if year:
+            queryset = queryset.filter(order_date__year=year)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add summary statistics for products owned by the user
+        user = self.request.user
+        context['total_orders'] = Order.objects.filter(items__product__seller=user).distinct().count()
+        context['orders_by_year'] = (
+            Order.objects.filter(items__product__seller=user)
+            .distinct()
+            .values('order_date__year')
+            .annotate(total=Count('id'))
+            .order_by('-order_date__year')
+        )
+        context['total_revenue'] = OrderItem.objects.filter(product__seller=user).aggregate(
+            total_revenue=Sum('total_price')
+        )['total_revenue']
+        return context

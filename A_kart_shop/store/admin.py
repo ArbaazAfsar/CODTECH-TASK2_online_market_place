@@ -23,4 +23,3 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ('is_on_sale', 'sale_price')
 
 
-admin.site.register(Order)

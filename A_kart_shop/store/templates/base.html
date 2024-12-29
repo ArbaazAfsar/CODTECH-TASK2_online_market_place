@@ -56,8 +56,12 @@
                     <a class="nav-link" href="#!">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href=" {% url 'list_product' %} ">list product</a>
+                    <a class="nav-link" href="{% url 'seller_products' %}">My Products</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'order_list' %}">View Orders</a>
+                </li>
+
                 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="shopDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -86,6 +90,9 @@
             <!-- Right Side: Authentication & Cart -->
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="btn btn-outline-secondary me-2" href=" {% url 'list_product' %} ">Upload Product</a>
+                </li>
                     <li class="nav-item">
                         <a class="btn btn-outline-secondary me-2" href="{% url 'logout' %}">Logout</a>
                     </li>

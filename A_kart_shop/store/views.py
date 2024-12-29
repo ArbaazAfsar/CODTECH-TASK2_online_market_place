@@ -80,21 +80,13 @@ def products(request, pk):
     categories = Category.objects.all()
     sub_categories = SubCategory.objects.all()
     reviews = Review.objects.filter(product=product)  # Fetch reviews for the product
-    cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
-    
-    # Update the cart with the new quantity if POST request is made
-    if request.method == 'POST':
-        quantity = int(request.POST.get('quantity', 1))
-        cart_item.quantity = quantity
-        cart_item.save()
-        return redirect('products', pk=product.id)  # Redirect to the same product page after adding to cart
+ 
     
     return render(request, "product.html", {
         'product': product,
         'categories': categories,
         'sub_categories': sub_categories,
         'reviews': reviews,
-        'cart_item': cart_item,
     })
     
     

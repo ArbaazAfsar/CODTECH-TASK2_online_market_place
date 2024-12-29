@@ -1,47 +1,40 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block cat-nav %}
 
-{% endblock cat-nav %}
 {% block content %}
 <div class="container mt-5">
-    <!-- Check if there are products -->
+    <!-- Seller Products Section -->
+    <h2 class="text-center">Your Products</h2>
+    
     {% if products %}
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mt-4">
             {% for product in products %}
                 <div class="col mb-5">
                     <div class="card h-100 shadow-sm">
-                        <!-- Sale badge -->
+                        <!-- Sale Badge -->
                         {% if product.is_on_sale %}
                             <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem;">
                                 Sale
                             </div>
                         {% endif %}
 
-                        <!-- Product image with fallback -->
-                        <img class="card-img-top img-fluid p-2"
-                        src="{{ product.image.url }}"
-                        alt="{{ product.name }}"
-                        style="height: 200px; object-fit: fill; border-radius: 10px; background-color: #f8f9fa;" />
+                        <!-- Product Image -->
+                        <img class="card-img-top img-fluid"
+                             src="{{ product.image.url|default:'https://dummyimage.com/450x300/dee2e6/6c757d.jpg' }}"
+                             alt="{{ product.name }}"
+                             style="height: 200px; object-fit: fill; border-radius: 5px;" />
 
-                        <!-- Product details -->
+                        <!-- Product Details -->
                         <div class="card-body p-4">
                             <div class="text-center">
-                                <!-- Product name -->
                                 <h5 class="fw-bolder text-truncate" title="{{ product.name }}">{{ product.name }}</h5>
-
-                                   <!-- Product Reviews -->
+                                
+                                <!-- Reviews -->
                                 <div class="product" data-average-rating="{{ product.get_average_rating }}" data-review-count="{{ product.review_set.count }}">
-                                    <!-- Product Reviews -->
                                     <div class="d-flex justify-content-center small text-warning mb-2" id="stars"></div>
-                                    <p class="text-center">
-                                        <span id="average-rating"></span> Stars ({{ product.review_set.count }} reviews)
-                                    </p>
+                                    <p>({{ product.review_set.count }} reviews)</p>
                                 </div>
-
-
-
-                                <!-- Product price -->
+                                
+                                <!-- Price -->
                                 {% if product.is_on_sale %}
                                     <span class="text-muted text-decoration-line-through">₹{{ product.price|floatformat:2 }}</span>
                                     ₹{{ product.sale_price|floatformat:2 }}
@@ -51,7 +44,7 @@
                             </div>
                         </div>
 
-                        <!-- Product actions -->
+                        <!-- Action Buttons -->
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                             <div class="text-center">
                                 <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">
@@ -89,46 +82,34 @@
             </ul>
         </nav>
     {% else %}
-        <!-- Message for no products -->
+        <!-- No Products Message -->
         <div class="alert alert-warning text-center mt-5">
-            No products available at the moment. Please check back later.
+            No products uploaded yet. <a href="{% url 'upload_product' %}">Upload a product now!</a>
         </div>
     {% endif %}
 </div>
 
+<script>
+    // Function to display stars based on the rating
+    function displayStars(starsElement, averageRating) {
+        starsElement.innerHTML = ''; // Clear existing stars
 
-
-    <script>
-        // Function to display the stars based on the rating
-        function displayStars(starsElement, averageRating) {
-            starsElement.innerHTML = '';  // Clear previous stars
-    
-            // Loop to create filled stars
-            for (let i = 0; i < averageRating; i++) {
-                starsElement.innerHTML += '<i class="bi bi-star-fill text-warning"></i>';  // Filled star
-            }
-    
-            // Loop to create empty stars
-            for (let i = averageRating; i < 5; i++) {
-                starsElement.innerHTML += '<i class="bi bi-star text-warning"></i>';  // Empty star
-            }
+        // Add filled stars
+        for (let i = 0; i < averageRating; i++) {
+            starsElement.innerHTML += '<i class="bi bi-star-fill text-warning"></i>';
         }
-    
-        // Get all product elements
-        const products = document.querySelectorAll('.product');
-        
-        products.forEach(product => {
-            // Get the average rating from the data attribute
-            const averageRating = parseFloat(product.getAttribute('data-average-rating'));
-            
-            // Display the average rating (rounded to 1 decimal place)
-            const averageRatingElement = product.querySelector('#average-rating');
-            averageRatingElement.textContent = averageRating.toFixed(1);
-    
-            // Get the stars element and display the stars
-            const starsElement = product.querySelector('#stars');
-            displayStars(starsElement, Math.round(averageRating));  // Round to the nearest integer
-        });
-    </script>
 
+        // Add empty stars
+        for (let i = averageRating; i < 5; i++) {
+            starsElement.innerHTML += '<i class="bi bi-star text-warning"></i>';
+        }
+    }
+
+    // Apply stars to each product
+    document.querySelectorAll('.product').forEach(product => {
+        const averageRating = Math.round(parseFloat(product.dataset.averageRating));
+        const starsElement = product.querySelector('#stars');
+        displayStars(starsElement, averageRating);
+    });
+</script>
 {% endblock content %}

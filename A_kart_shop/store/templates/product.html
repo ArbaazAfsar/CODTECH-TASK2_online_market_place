@@ -17,38 +17,41 @@
             <div class="col-md-6">
                 <img class="card-img-top mb-5 mb-md-0" src="{{ product.image.url }}" 
                      alt="{{ product.name }}" 
-                     style="max-height: 400px; object-fit: cover;" />
+                     style="max-height: 400px; object-fit: fill;" />
             </div>
             <div class="col-md-6">
                 <div class="small mb-1">SKU: {{ product.sku }}</div>
                 <h1 class="display-5 fw-bolder">{{ product.name }}</h1>
                 <div class="fs-5 mb-5">
-                    <span class="text-decoration-line-through">₹{{ product.original_price }}</span>
-                    <span>₹{{ product.get_final_price|floatformat:2 }}</span>
+                    {% if product.is_on_sale %}
+                    <span class="text-decoration-line-through">₹{{ product.price|floatformat:2 }}</span>
+                    <span>₹{{ product.sale_price|floatformat:2 }}</span>
+                    {% else %}
+                    <span>₹{{ product.price|floatformat:2 }}</span>
                 </div>
+                {% endif %}
 
                 <p class="lead">{{ product.description }}</p>
                 <br>
 
-                <form method="POST" action="{% url 'add_to_cart' product.id %}">
                     {% csrf_token %}
                     <div class="d-flex mb-3">
                         <!-- Quantity Input Field -->
-                        <input class="form-control text-center me-3" name="quantity" id="inputQuantity" type="number" value="{{ cart_item.quantity|default:1 }}" style="max-width: 3rem" min="1" />
+                        
                         <div class="d-flex gap-3">
                             <!-- Add to Cart Button -->
-                            <button class="btn btn-outline-dark flex-shrink-0" type="submit">
-                                <i class="bi-cart-fill me-1"></i> Add to Cart
-                            </button>
+                            <a class="btn btn-outline-dark flex-shrink-0" href="{% url 'add_to_cart' product.id %}">
+                                <i class="bi bi-bag-fill me-2"></i> Add to cart
+                            </a>
+                            <!-- Buy Now Button with the same style -->
+                            <a class="btn btn-outline-dark flex-shrink-0" href="{% url 'buy_product' product.id %}">
+                                <i class="bi bi-bag-fill me-2"></i> Buy Now
+                            </a>
                         </div>
                     </div>
                 </form>
-
                 <div class="d-flex mb-3">
-                    <!-- Buy Now Button with the same style -->
-                    <a class="btn btn-outline-dark flex-shrink-0" href="{% url 'buy_product' product.id %}">
-                        <i class="bi bi-bag-fill me-2"></i> Buy Now
-                    </a>
+
                 </div>
             </div>
         </div>
