@@ -34,7 +34,7 @@ The **Online Marketplace** is an e-commerce platform that allows users to buy, s
   ![My Products](A_kart_shop/project_screenshots/Screenshot%202024-12-29%20215445.png)  
   
 
-- **New Orders Section**: View and manage all orders placed by customers.  
+- **View Orders Section**: View and manage all orders placed by customers.  
   ![View Orders](A_kart_shop/project_screenshots/Screenshot%202024-12-29%20215522.png)  
     
 
