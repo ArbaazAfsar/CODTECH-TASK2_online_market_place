@@ -13,7 +13,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 
 
-@login_required
+@login_required(login_url='login')
 def list_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -27,7 +27,7 @@ def list_product(request):
 
     return render(request, 'list_product.html', {'form': form})
 
-@login_required
+@login_required(login_url='login')
 def seller_products(request, seller_id=None):
     if seller_id:
         seller = get_object_or_404(User, id=seller_id)
@@ -39,7 +39,7 @@ def seller_products(request, seller_id=None):
 
 
 
-@login_required
+@login_required(login_url='login')
 def buy_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
@@ -81,7 +81,7 @@ def add_to_cart(request, product_id):
 
 
 
-@login_required
+@login_required(login_url='login')
 def view_cart(request):
     cart_items = Cart.objects.filter(user=request.user)
     subtotal = sum(item.product.price * item.quantity for item in cart_items)
@@ -115,7 +115,7 @@ def update_cart(request, cart_item_id):
 
 
 
-@login_required
+@login_required(login_url='login')
 def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(Cart, id=cart_item_id, user=request.user)
     cart_item.delete()
@@ -123,7 +123,7 @@ def remove_from_cart(request, cart_item_id):
 
 
 
-@login_required
+@login_required(login_url='login')
 def checkout(request):
     cart_items = Cart.objects.filter(user=request.user)
     if not cart_items.exists():
@@ -155,7 +155,7 @@ def checkout(request):
     return redirect('order_success', order_id=order.id)
 
 
-@login_required
+@login_required(login_url='login')
 def order_success(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'order_success.html', {'order': order})
@@ -194,7 +194,7 @@ class SellerOrderListView(ListView):
         return context
     
     
-@login_required
+@login_required(login_url='login')
 def approve_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     if request.user == order.items.first().product.seller:  # Check if the user is the seller

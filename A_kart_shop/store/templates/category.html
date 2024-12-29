@@ -1,8 +1,46 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<link href="{% static 'css/category.css' %}" rel="stylesheet" />
+<style>
+    .Cat-title {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        border: none;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-img-top {
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+    }
+
+    .text-truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
+
+<!-- Page Title -->
+
+<div class="container text-center my-5">
+    <h2 class="Cat-title text-primary fw-bold">{{ category.name }}</h2>
+</div>
+
+
 <div class="container mt-5">
     <!-- Check if there are products -->
+
     {% if products %}
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             {% for product in products %}

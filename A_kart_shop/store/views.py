@@ -48,6 +48,7 @@ def categorys(request, name):
         
         return render(request, 'category.html', {
             'categories': categories,
+            'category':category,
             'products': page_obj,
             'sub_categories': sub_categories,
             'selected_category': category,
