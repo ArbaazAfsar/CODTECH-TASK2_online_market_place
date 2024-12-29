@@ -75,4 +75,4 @@ The **Online Marketplace** is an e-commerce platform that allows users to buy, s
 ## How to Run
 1. Clone the repository:
    ```bash
-   git clone https://github.com/username/online-marketplace.git
+   git clone https://github.com/ArbaazAfsar/CODTECH-TASK2_online_market_place.git
